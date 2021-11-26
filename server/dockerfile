@@ -1,0 +1,12 @@
+# build stage
+FROM golang:alpine AS go-builder
+WORKDIR /src
+COPY . .
+RUN cd /src && go build -o app
+
+# final stage
+FROM alpine
+WORKDIR /app
+COPY public public
+COPY --from=go-builder /src/app .
+ENTRYPOINT [ "./app", "--debug" ]

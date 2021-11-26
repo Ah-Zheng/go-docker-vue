@@ -1,0 +1,30 @@
+version: '3.3'
+
+services:
+
+  # server:
+  #   build:
+  #     context: .
+  #     dockerfile: ./server/dockerfile
+  #   restart: always
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - 8000:8000
+
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: qwe123
+      MARIADB_DATABASE: test
+    ports:
+      - 3306:3306
+    volumes:
+      - ./database:/var/lib/mysql
+
+  adminer:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
