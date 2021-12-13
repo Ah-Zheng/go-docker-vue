@@ -2,15 +2,15 @@ version: '3.3'
 
 services:
 
-  # server:
-  #   build:
-  #     context: .
-  #     dockerfile: ./server/dockerfile
-  #   restart: always
-  #   depends_on:
-  #     - db
-  #   ports:
-  #     - 8000:8000
+  server:
+    build:
+      context: .
+      dockerfile: ./server/threekingdoms/dockerfile
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8000:8000
 
   db:
     image: mariadb

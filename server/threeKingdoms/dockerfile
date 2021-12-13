@@ -9,4 +9,4 @@ FROM alpine
 WORKDIR /app
 COPY public public
 COPY --from=go-builder /src/app .
-ENTRYPOINT [ "./app", "--debug" ]
+ENTRYPOINT [ "./app", "threekingdoms" ]
