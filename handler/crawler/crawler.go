@@ -1,10 +1,10 @@
 package crawler
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
-	"reflect"
 	"strings"
 
 	"github.com/antchfx/htmlquery"
@@ -12,22 +12,23 @@ import (
 )
 
 type Role struct {
-	Star            string // 星數
-	Camp            string // 陣營
-	Name            string // 武將
-	Cost            string // 佔位
-	Cavalry         string // 騎兵
-	Shield          string // 盾兵
-	Bow             string // 弓兵
-	Spear           string // 槍兵
-	instrument      string // 器械
-	Command         string // 統率
-	Intelligence    string // 智力
-	Speed           string // 速度
-	Politics        string // 政治
-	Charm           string // 魅力
-	Tactic          string // 戰法
-	inheritedTactic string // 傳承戰法
+	Star            string `json:"star"`             // 星數
+	Camp            string `json:"camp"`             // 陣營
+	Name            string `json:"name"`             // 武將
+	Cost            string `json:"cost"`             // 佔位
+	Cavalry         string `json:"cavalry"`          // 騎兵
+	Shield          string `json:"shield"`           // 盾兵
+	Bow             string `json:"bow"`              // 弓兵
+	Spear           string `json:"spear"`            // 槍兵
+	Instrument      string `json:"instrument"`       // 器械
+	Command         string `json:"command"`          // 統率
+	Force           string `json:"force"`            // 武力
+	Intelligence    string `json:"intelligence"`     // 智力
+	Speed           string `json:"speed"`            // 速度
+	Politics        string `json:"politics"`         // 政治
+	Charm           string `json:"charm"`            // 魅力
+	Tactic          string `json:"tactic"`           // 戰法
+	InheritedTactic string `json:"inherited_tactic"` // 傳承戰法
 }
 
 func GetRoleInfo() {
@@ -67,46 +68,54 @@ func GetRoleInfo() {
 		_, _ = file.Write([]byte("\n"))
 
 		roles := htmlquery.Find(doc, `//*[@class="table-responsive"]/table/tbody/tr`)
-		// roleList = []Role{}
+		keyMapping := genKeyMap()
+		roleList := []map[string]string{}
 
 		// 寫入武將內容
-		for _, role := range roles {
+		for i, role := range roles {
 			contents := htmlquery.Find(role, `./td`)
-			// singleRole := []string{}
-			value := Role{}
-			v := reflect.ValueOf(value)
+			singleRoleInfo := map[string]string{}
 
-			for i, content := range contents {
+			for _, content := range contents {
 				contentNode := htmlquery.FindOne(content, `.`)
-				// singleRole = append(singleRole, htmlquery.InnerText(contentNode))
-				v.FieldByIndex()
 				_, _ = file.Write([]byte(htmlquery.InnerText(contentNode) + " "))
+				singleRoleInfo[keyMapping[i]] = strings.TrimSpace(htmlquery.InnerText(contentNode))
 			}
 
-			// value := Role{}
-			// v := reflect.ValueOf(value)
-
-			// for i := 0; i < v.NumField(); i++ {
-			// 	v.Elem().FieldByName("Star").SetString(singleRole[i])
-			// 	Star = reflect.Indirect(v).FieldByName("Star")
-			// 	Camp := reflect.Indirect(v).FieldByName("Camp")
-			// 	Name := reflect.Indirect(v).FieldByName("Name")
-			// 	Cost := reflect.Indirect(v).FieldByName("Cost")
-			// 	Cavalry := reflect.Indirect(v).FieldByName("Cavalry")
-			// 	Shield := reflect.Indirect(v).FieldByName("Shield")
-			// 	Bow := reflect.Indirect(v).FieldByName("Bow")
-			// 	Spear := reflect.Indirect(v).FieldByName("Spear")
-			// 	Command := reflect.Indirect(v).FieldByName("Command")
-			// 	Intelligence := reflect.Indirect(v).FieldByName("Intelligence")
-			// 	instrument := reflect.Indirect(v).FieldByName("instrument")
-			// 	Speed := reflect.Indirect(v).FieldByName("Speed")
-			// 	Politics := reflect.Indirect(v).FieldByName("Politics")
-			// 	Charm := reflect.Indirect(v).FieldByName("Charm")
-			// 	Tactic := reflect.Indirect(v).FieldByName("Tactic")
-			// 	InheritedTactic := reflect.Indirect(v).FieldByName("InheritedTactic")
-			// }
-
+			roleList = append(roleList, singleRoleInfo)
 			_, _ = file.Write([]byte("\n"))
 		}
+
+		res := []Role{}
+		resData, _ := json.Marshal(roleList)
+		fmt.Println(roleList)
+
+		if err = json.Unmarshal(resData, &res); err != nil {
+			log.Fatal(err)
+		}
 	})
+}
+
+func genKeyMap() map[int]string {
+	keyMap := map[int]string{
+		0:  "Star",
+		1:  "Camp",
+		2:  "Name",
+		3:  "Cost",
+		4:  "Cavalry",
+		5:  "Shield",
+		6:  "Bow",
+		7:  "Spear",
+		8:  "Instrument",
+		9:  "Force",
+		10: "Command",
+		11: "Intelligence",
+		12: "Speed",
+		13: "Politics",
+		14: "Charm",
+		15: "Tactic",
+		16: "InheritedTactic",
+	}
+
+	return keyMap
 }
