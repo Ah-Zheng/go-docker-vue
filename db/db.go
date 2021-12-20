@@ -14,7 +14,7 @@ const (
 	NETWORK  = "tcp"
 	SERVER   = "1207.0.0.1"
 	PORTS    = 3306
-	DATABASE = "test"
+	DATABASE = "threekingdoms"
 )
 
 func SqlConn() *sql.DB {
