@@ -2,7 +2,6 @@ package crawler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"strings"
 
@@ -44,7 +43,7 @@ func genTacticKeyMap() map[int]string {
 	}
 }
 
-func GetTacticInfo() {
+func GetTacticInfo() []Tactic {
 	c := colly.NewCollector()
 	tacticList := []map[string]string{}
 
@@ -69,11 +68,11 @@ func GetTacticInfo() {
 		}
 
 		tacInfos := htmlquery.Find(doc, `//*[@class="tabs"]/*[@class="tab-content mt-3"]/*[@role="tabpanel"]`)
-		keyMapping := genTacticKeyMap()
 
 		if len(tacInfos) > 0 {
 			singleTac := map[string]string{}
 			nameNode := htmlquery.FindOne(tacInfos[0], `./span`)
+			keyMapping := genTacticKeyMap()
 			singleTac[keyMapping[0]] = strings.TrimSpace(htmlquery.InnerText(nameNode))
 			trs := htmlquery.Find(tacInfos[0], `./table/tbody/tr`)
 
@@ -97,5 +96,5 @@ func GetTacticInfo() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(res)
+	return res
 }

@@ -26,6 +26,8 @@ func SqlConn() *sql.DB {
 		return nil
 	}
 
-	fmt.Print("connected successful")
+	fmt.Println("connected successful")
+	res, _ := db.Exec("SELECT * FROM `roles`")
+	fmt.Println(res)
 	return db
 }
